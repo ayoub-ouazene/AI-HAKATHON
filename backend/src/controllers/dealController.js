@@ -7,7 +7,37 @@ exports.createPost = async (req, res) => {
     const { amountRequested, equityOffered, offerType } = req.body;
 
     // FROM AI ENDPOINT
-    const riskScore = Math.floor(Math.random() * 30) + 10; 
+    const riskScore = Math.floor(Math.random() * 30) + 10;
+    // fetch
+
+//     const getStartupRiskScore = async (data) => {
+//     try {
+//         const response = await fetch('http://127.0.0.1:8000/predict', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({
+//                 experience: data.experienceYears,
+//                 founders: data.numFounders,
+//                 tech_founder: data.hasTechnicalFounder,
+//                 users: data.monthlyUsers
+//             }),
+//         });
+
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+
+//         const result = await response.json();
+//         return result; // returns { risk_score: 72, category: "Medium" }
+        
+//     } catch (error) {
+//         console.error("AI Service unreachable or Error:", error.message);
+//         return { risk_score: 0, category: "Pending" };
+//     }
+// }; 
+
 
     const post = await prisma.fundingRequest.create({
       data: {
