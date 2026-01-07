@@ -29,7 +29,7 @@ import os
 
 from ocrCNRC.service import verify_cnrc
 
-app = FastAPI(title="Startup Verification API")
+# app = FastAPI(title="Startup Verification API")
 
 UPLOAD_DIR = "data/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -61,7 +61,7 @@ from generateSlides.pdf_utils import extract_pdf_text
 from generateSlides.prompt import build_slides_prompt
 from generateSlides.llm import generate_slides_json
 
-app = FastAPI(title="Startup Slide Generator")
+# app = FastAPI(title="Startup Slide Generator")
 
 # Hackathon in-memory store
 SLIDES_DB = {}
