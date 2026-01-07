@@ -3,8 +3,9 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const cors = require("cors")
-const http = require("http")
+
 const Routes = require("./src/routes/index.js")
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -13,7 +14,6 @@ app.use(cors());
 
 
 
-const {initSocket} = require("./src/socket/index.js")
 
 app.use('/api',Routes);
 
@@ -50,12 +50,7 @@ app.use('*', (req, res) => {
 });
 
 
-const server = http.createServer(app);
-
-initSocket(server);
-// Start server
-
-server.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 
 });
