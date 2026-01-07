@@ -17,6 +17,10 @@ router.post('/opportunity', verifyToken, investorController.createOpportunity);
 
 // Get my Portfolio/Offers
 // This matches 'exports.getMyPortfolio' in the controller
-router.get('/portfolio', verifyToken, investorController.getMyPortfolio);
+router.get('/portfolio', verifyToken, investorController.getPortfolioDashboard);
+
+router.post('/make-offer', verifyToken, investorController.createInvestmentOffer);
+
+
 
 module.exports = router;
