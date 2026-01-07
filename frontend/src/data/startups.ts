@@ -24,6 +24,7 @@ export interface Startup {
     solution: string;
     marketTraction: { label: string; value: string }[];
     team: { name: string; role: string; bio: string; avatar: string }[];
+    offerType?: "EQUITY" | "ROYALTY" | "FIXED";
 }
 
 export const STARTUPS: Startup[] = [

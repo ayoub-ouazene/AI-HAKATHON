@@ -76,9 +76,9 @@ exports.createPost = async (req, res) => {
       }
     });
 
-    res.status(201).json({ 
-      message: "Funding request created successfully", 
-      post 
+    res.status(201).json({
+      message: "Funding request created successfully",
+      post
     });
 
   } catch (err) {
@@ -90,11 +90,11 @@ exports.createPost = async (req, res) => {
 exports.getAllDeals = async (req, res) => {
   try {
     const deals = await prisma.fundingRequest.findMany({
-      where: { 
-        isActive: true 
+      where: {
+        isActive: true
       },
-      include: { 
-        startup: true 
+      include: {
+        startup: true
       }
     });
 
@@ -107,9 +107,15 @@ exports.getAllDeals = async (req, res) => {
 
 exports.makeOffer = async (req, res) => {
   try {
-    const investorId = req.user.id;
+    
+    const investorId = parseInt(req.user.id);
     const { fundingRequestId, proposedAmount, proposedEquity } = req.body;
 
+    // Validate inputs
+    if (!fundingRequestId || isNaN(fundingRequestId)) {
+      return res.status(400).json({ error: "Invalid Funding Request ID" });
+    }
+    
     const offer = await prisma.investmentOffer.upsert({
       where: {
         investorId_fundingRequestId: {
@@ -133,6 +139,7 @@ exports.makeOffer = async (req, res) => {
 
     res.json(offer);
   } catch (err) {
+    console.error("MAKE OFFER ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -153,12 +160,12 @@ exports.makeOffer = async (req, res) => {
 exports.getAllDeals = async (req, res) => {
   try {
     const deals = await prisma.fundingRequest.findMany({
-      where: { 
-        isActive: true 
+      where: {
+        isActive: true
       },
-      include: { 
+      include: {
         // Changing 'select' to 'true' fetches ALL columns from the Startup table
-        startup: true 
+        startup: true
       }
     });
 

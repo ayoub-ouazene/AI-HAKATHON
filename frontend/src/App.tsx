@@ -7,9 +7,11 @@ import { UserProvider, useUser } from "@/context/UserContext";
 
 // Layout
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 
 // Public Pages
 import Gateway from "@/pages/Gateway";
+import LoginPage from "@/pages/LoginPage";
 import FounderRegistration from "@/pages/FounderRegistration";
 import InvestorRegistration from "@/pages/InvestorRegistration";
 import NotFound from "@/pages/NotFound";
@@ -38,11 +40,16 @@ const App = () => {
 
               {/* Public Routes */}
               <Route path="/" element={<Gateway />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route path="/onboarding/startup" element={<FounderRegistration />} />
               <Route path="/onboarding/investor" element={<InvestorRegistration />} />
 
               {/* Protected Routes (Wrapped in Dashboard Layout) */}
-              <Route element={<DashboardLayout />}>
+              <Route element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }>
 
                 {/* Startup Views */}
                 <Route path="/startup/dashboard" element={<StartupDashboard />} />

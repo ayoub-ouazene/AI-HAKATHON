@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     ChevronRight, ChevronLeft, CheckCircle2, Play, FileText,
@@ -13,11 +13,47 @@ import { DealNegotiationModal } from "@/components/djisr/DealNegotiationModal";
 
 const DealRoom = () => {
     const { id } = useParams();
+    const location = useLocation();
+    const dealData = location.state?.deal;
+
     const [activeTab, setActiveTab] = useState("overview");
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
 
-    const startup = STARTUPS.find(s => s.id === id) || STARTUPS[0]; // Fallback to first if not found for demo
+    // Normalize Data (Map Backend Deal/Startup to UI format)
+    // If we have real data, map it. Otherwise fall back to mock for direct links (for now)
+    const mockStartup = STARTUPS.find(s => s.id === id) || STARTUPS[0];
+
+    // Derived Startup Object for UI
+    const startup = dealData ? {
+        id: dealData.id,
+        name: dealData.startup.companyName,
+        logo: dealData.startup.logoUrl ? <img src={dealData.startup.logoUrl} alt="" className="w-full h-full object-cover" /> : dealData.startup.companyName.charAt(0),
+        oneLiner: dealData.startup.description.substring(0, 100) + "...", // Fallback one-liner
+        tags: ["Tech", "SaaS", "AI"], // Fallback tags
+        verified: true, // Assume verified if inactive check passed
+        riskLevel: dealData.riskLevel.charAt(0) + dealData.riskLevel.slice(1).toLowerCase(), // "LOW" -> "Low"
+        riskScore: dealData.riskScore,
+        videoUrl: dealData.startup.videoPitchUrl || "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1632&q=80",
+        problem: dealData.startup.description, // Use description for problem section
+        solution: "Our solution leverages advanced AI to solve this problem efficiently...", // Placeholder if solution not split
+        riskAnalysis: "Automated analysis indicates strong fundamentals with managed execution risk.",
+        marketTraction: [
+            { label: "Monthly Users", value: dealData.startup.monthlyUsers || 0 }, // If returned
+            { label: "Experience", value: (dealData.startup.experienceYears || 0) + " Yrs" }
+        ],
+        team: [
+            { name: dealData.startup.founderName || "Founder", role: "CEO", bio: "Experienced founder.", avatar: "https://i.pravatar.cc/150?u=a" }
+        ],
+        ask: Number(dealData.amountRequested).toLocaleString() + " DZD",
+        equity: dealData.equityOffered + "%",
+        offerType: dealData.offerType, // Added for dynamic label
+        committed: 45, // Mock
+        valuation: "10M DZD", // Mock or derived
+        minTicket: "50k DZD",
+        slides: [], // No slides in backend example yet
+        logoUrl: dealData.startup.logoUrl // For fallback
+    } : mockStartup;
 
     return (
         <div className="min-h-screen bg-background noise-overlay font-sans text-foreground">
@@ -26,6 +62,8 @@ const DealRoom = () => {
                 isOpen={isDealModalOpen}
                 onClose={() => setIsDealModalOpen(false)}
                 startupName={startup.name}
+                dealId={Number(startup.id) || 0}
+                offerType={startup.offerType}
             />
 
             {/* Header / Breadcrumbs */}
@@ -383,8 +421,11 @@ const DealRoom = () => {
                                     <span className="font-semibold text-sm">{startup.valuation}</span>
                                 </div>
                                 <div>
-                                    <span className="block text-[10px] text-muted-foreground uppercase">Min Ticket</span>
-                                    <span className="font-semibold text-sm">{startup.minTicket}</span>
+                                    <span className="block text-[10px] text-muted-foreground uppercase">
+                                        {/* Dynamic Label based on mapped offerType */}
+                                        {startup.offerType === 'ROYALTY' ? 'Royalty' : 'Equity'}
+                                    </span>
+                                    <span className="font-semibold text-sm">{startup.equity}</span>
                                 </div>
                             </div>
 

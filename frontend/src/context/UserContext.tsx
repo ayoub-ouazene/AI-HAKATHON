@@ -5,24 +5,35 @@ type UserType = 'startup' | 'investor' | null;
 interface UserContextType {
     userType: UserType;
     isAuthenticated: boolean;
-    login: (type: UserType) => void;
+    login: (type: UserType, token?: string) => void;
     logout: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-    const [userType, setUserType] = useState<UserType>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // Initialize from localStorage
+    const [userType, setUserType] = useState<UserType>(() => {
+        return (localStorage.getItem('userType') as UserType) || null;
+    });
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        return !!localStorage.getItem('token'); // Assuming token presence means auth
+    });
 
-    const login = (type: UserType) => {
+    const login = (type: UserType, token?: string) => {
         setUserType(type);
         setIsAuthenticated(true);
+        localStorage.setItem('userType', type || '');
+        if (token) {
+            localStorage.setItem('token', token);
+        }
     };
 
     const logout = () => {
         setUserType(null);
         setIsAuthenticated(false);
+        localStorage.removeItem('userType');
+        localStorage.removeItem('token');
     };
 
     return (
