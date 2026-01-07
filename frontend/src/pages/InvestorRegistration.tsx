@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Building2, Briefcase, Sparkles, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/UserContext";
 import { DjisrButton } from "@/components/djisr/DjisrButton";
 import { StepIndicator } from "@/components/djisr/StepIndicator";
 import { TrustBox } from "@/components/djisr/TrustBox";
@@ -16,6 +17,7 @@ const sectors = ["Fintech", "AgriTech", "SaaS", "Health", "Logistics", "E-commer
 
 const InvestorRegistration = () => {
     const navigate = useNavigate();
+    const { login } = useUser();
     const [currentStep, setCurrentStep] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
@@ -57,7 +59,11 @@ const InvestorRegistration = () => {
         try {
             setIsSubmitting(true);
             console.log("Submitting Investor Form:", formData);
-            await registerInvestor(formData);
+            const response = await registerInvestor(formData);
+
+            // Auto-login
+            login('investor', response.token);
+
             navigate("/investor/dashboard");
         } catch (error) {
             console.error("Registration failed:", error);

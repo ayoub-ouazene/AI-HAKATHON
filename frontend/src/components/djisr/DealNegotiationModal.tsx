@@ -3,14 +3,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Lock, CheckCircle2, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DjisrButton } from "./DjisrButton";
+import { createInvestmentOffer } from "@/lib/api";
+import { toast } from "sonner";
 
 interface DealNegotiationModalProps {
     isOpen: boolean;
     onClose: () => void;
     startupName: string;
+    dealId: number;
 }
 
-export const DealNegotiationModal = ({ isOpen, onClose, startupName }: DealNegotiationModalProps) => {
+export const DealNegotiationModal = ({ isOpen, onClose, startupName, dealId }: DealNegotiationModalProps) => {
     const [amount, setAmount] = useState<string>("");
     const [equity, setEquity] = useState<number>(5.0);
     const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
@@ -34,10 +37,21 @@ export const DealNegotiationModal = ({ isOpen, onClose, startupName }: DealNegot
 
     const handleExecute = async () => {
         setIsLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setIsLoading(false);
-        setIsSuccess(true);
+        try {
+            await createInvestmentOffer({
+                fundingRequestId: dealId,
+                proposedAmount: numericAmount,
+                proposedEquity: equity
+            });
+
+            setIsSuccess(true);
+            toast.success("Investment offer sent successfully!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to send offer. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Reset on reopen

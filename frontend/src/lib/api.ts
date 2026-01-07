@@ -15,7 +15,7 @@ export async function registerFounder(data: any) {
     if (data.pitchDeckUrl) formData.append("pitchDeckUrl", data.pitchDeckUrl);
     if (data.cnrcUrl) formData.append("cnrcUrl", data.cnrcUrl);
 
-    const response = await fetch(`${API_BASE_URL}/founders`, {
+    const response = await fetch(`${API_BASE_URL}/auth/signup/startup`, {
         method: "POST",
         body: formData,
     });
@@ -28,7 +28,7 @@ export async function registerFounder(data: any) {
 }
 
 export async function registerInvestor(data: any) {
-    const response = await fetch(`${API_BASE_URL}/investors`, {
+    const response = await fetch(`${API_BASE_URL}/auth/signup/investor`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -38,6 +38,36 @@ export async function registerInvestor(data: any) {
 
     if (!response.ok) {
         throw new Error("Failed to register investor");
+    }
+
+    return response.json();
+}
+
+export async function getDeals() {
+    const response = await fetch(`${API_BASE_URL}/deals/feed`);
+    if (!response.ok) {
+        throw new Error("Failed to fetch deals");
+    }
+    return response.json();
+}
+
+export async function createInvestmentOffer(data: { fundingRequestId: number, proposedAmount: number, proposedEquity: number }) {
+    const token = localStorage.getItem('token');
+
+    // The backend expects: fundingRequestId, proposedAmount, proposedEquity
+    // And user ID is extracted from token (req.user.id)
+
+    const response = await fetch(`${API_BASE_URL}/investor/make-offer`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to create offer");
     }
 
     return response.json();

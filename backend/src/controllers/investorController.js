@@ -5,7 +5,7 @@ exports.updateProfile = async (req, res) => {
   try {
     const investorId = req.user.id;
     // We only take fields that exist in your Schema
-    const { biography, sectors } = req.body; 
+    const { biography, sectors } = req.body;
 
     // Note: We upload the file to Cloudinary, but we CANNOT save the URL 
     // to the database because your schema lacks an 'avatarUrl' column.
@@ -20,7 +20,7 @@ exports.updateProfile = async (req, res) => {
     const updatedInvestor = await prisma.investor.update({
       where: { id: investorId },
       data: {
-        biography: biography, 
+        biography: biography,
         sectors: sectorsArray,
       },
       select: {
@@ -69,10 +69,10 @@ exports.getPortfolioDashboard = async (req, res) => {
   try {
     // CHECK 1: Is the middleware working?
     if (!req.user || !req.user.id) {
-        throw new Error("User ID missing. Check 'protectInvestor' middleware.");
+      throw new Error("User ID missing. Check 'protectInvestor' middleware.");
     }
-    
-    const investorId = req.user.id; 
+
+    const investorId = req.user.id;
 
     const investor = await prisma.investor.findUnique({
       where: { id: investorId },
@@ -115,15 +115,15 @@ exports.getPortfolioDashboard = async (req, res) => {
     const mapSafeOffer = (offer, statusLabel) => {
       // SAFETY CHECK: If the deal or startup was deleted, skip this offer
       if (!offer.fundingRequest || !offer.fundingRequest.startup) {
-          console.warn(`Skipping broken offer ID ${offer.id} - Deal/Startup missing`);
-          return null; 
+        console.warn(`Skipping broken offer ID ${offer.id} - Deal/Startup missing`);
+        return null;
       }
 
       const startup = offer.fundingRequest.startup;
       const equity = Number(offer.proposedEquity || 0);
       const amount = Number(offer.proposedAmount || 0);
       const valuation = equity > 0 ? (amount / (equity / 100)) : 0;
-      
+
       const expDate = new Date(offer.createdAt);
       expDate.setDate(expDate.getDate() + 14);
 
@@ -135,9 +135,9 @@ exports.getPortfolioDashboard = async (req, res) => {
         one_liner: startup.description ? (startup.description.substring(0, 60) + "...") : "",
         status: statusLabel === 'live' ? 'live' : (offer.status === 'COUNTER_OFFER' ? 'negotiating' : 'pending'),
         // specific fields based on type
-        ...(statusLabel === 'live' 
-            ? { invested_date: offer.updatedAt.toISOString().split('T')[0], my_stake_amount: amount, ownership_percentage: equity, current_valuation: valuation.toLocaleString() }
-            : { offer_date: offer.createdAt.toISOString().split('T')[0], offer_amount: amount, equity_asked: equity, implied_valuation: valuation.toLocaleString(), expiration_date: expDate.toISOString().split('T')[0] }
+        ...(statusLabel === 'live'
+          ? { invested_date: offer.updatedAt.toISOString().split('T')[0], my_stake_amount: amount, ownership_percentage: equity, current_valuation: valuation.toLocaleString() }
+          : { offer_date: offer.createdAt.toISOString().split('T')[0], offer_amount: amount, equity_asked: equity, implied_valuation: valuation.toLocaleString(), expiration_date: expDate.toISOString().split('T')[0] }
         )
       };
     };
@@ -163,7 +163,7 @@ exports.getPortfolioDashboard = async (req, res) => {
 
   } catch (err) {
     // LOG THE ACTUAL ERROR TO YOUR TERMINAL
-    console.error("Dashboard Error Detailed:", err); 
+    console.error("Dashboard Error Detailed:", err);
     res.status(500).json({ error: err.message }); // Send the specific error to Postman
   }
 };
@@ -171,10 +171,15 @@ exports.getPortfolioDashboard = async (req, res) => {
 //done
 exports.createInvestmentOffer = async (req, res) => {
   try {
-    const investorId = req.user.id; // From Auth Middleware
-    
+    const investorId = parseInt(req.user.id); // From Auth Middleware
+
     // We get the deal ID and the terms from the body
     const { fundingRequestId, proposedAmount, proposedEquity } = req.body;
+
+    // 0. SECURITY: Ensure user is an Investor
+    if (req.user.role !== 'INVESTOR') {
+      return res.status(403).json({ error: "Only Investors can make offers. Please log in as an Investor." });
+    }
 
     // 1. Check if offer already exists (Prevent duplicate offers on same deal)
     const existingOffer = await prisma.investmentOffer.findUnique({
@@ -201,9 +206,9 @@ exports.createInvestmentOffer = async (req, res) => {
       }
     });
 
-    res.status(201).json({ 
-      message: "Offer sent successfully! You are now on the waiting list.", 
-      offer: newOffer 
+    res.status(201).json({
+      message: "Offer sent successfully! You are now on the waiting list.",
+      offer: newOffer
     });
 
   } catch (err) {

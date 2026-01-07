@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/UserContext";
 import { BaselineInput } from "@/components/djisr/BaselineInput";
 import { DjisrButton } from "@/components/djisr/DjisrButton";
 import { LogoUpload } from "@/components/djisr/LogoUpload";
@@ -19,6 +20,7 @@ const sectors = ["SaaS", "Fintech", "Agritech", "E-commerce", "Healthtech", "Edt
 
 const FounderRegistration = () => {
   const navigate = useNavigate();
+  const { login } = useUser();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -73,7 +75,13 @@ const FounderRegistration = () => {
     try {
       setIsSubmitting(true);
       console.log("Submitting Founder Form:", formData);
-      await registerFounder(formData);
+      const response = await registerFounder(formData);
+
+      // Auto-login
+      // Backend returns { token, user: { role: 'STARTUP', ... } }
+      // We assume role is correctly passed or we default to 'startup' since this IS the startup form
+      login('startup', response.token);
+
       navigate("/startup/dashboard");
     } catch (error) {
       console.error("Registration failed:", error);
@@ -105,7 +113,7 @@ const FounderRegistration = () => {
                 transition={{
                   duration: 5 + i * 0.2,
                   repeat: Infinity,
-                  yoyo: Infinity,
+                  repeatType: "reverse",
                   ease: "easeInOut"
                 }}
               />
