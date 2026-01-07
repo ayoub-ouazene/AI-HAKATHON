@@ -37,14 +37,15 @@ exports.createPost = async (req, res) => {
     let riskLevel = "MEDIUM";
 
     try {
-      const aiResponse = await fetch('http://127.0.0.1:8000/predict', {
+      const aiResponse = await fetch('http://127.0.0.1:8000/estimate-risk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          experience: startupData.experienceYears,
-          founders: startupData.numFounders,
-          tech_founder: startupData.hasTechnicalFounder,
-          users: startupData.monthlyUsers
+          sector: startupData.sector,
+          experienceYears: startupData.experienceYears,
+          numFounders: startupData.numFounders,
+          hasTechnicalFounder: startupData.hasTechnicalFounder,
+          monthlyUsers: startupData.monthlyUsers
         }),
       });
 

@@ -6,7 +6,7 @@ const verifyToken = require('../middlewares/authMiddleware');
 const slidesController = require('../controllers/slidesController');
 
 
-//http://localhost:3000/api/slides/generate
-router.get('/generate', verifyToken , slidesController.generateSlidesFromPitch);
+//http://localhost:3000/api/slides/SlideGenerate
+router.get('/SlideGenerate', verifyToken , slidesController.generateSlidesFromPitch);
 
 module.exports = router;
