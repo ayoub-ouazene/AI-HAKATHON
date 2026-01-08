@@ -13,9 +13,9 @@ export async function registerFounder(data: any) {
     });
 
     // Append files
-    if (data.logoUrl) formData.append("logoUrl", data.logoUrl);
-    if (data.pitchDeckUrl) formData.append("pitchDeckUrl", data.pitchDeckUrl);
-    if (data.cnrcUrl) formData.append("cnrcUrl", data.cnrcUrl);
+    if (data.logoUrl) formData.append("logo", data.logoUrl);
+    if (data.pitchDeckUrl) formData.append("pitchDeck", data.pitchDeckUrl);
+    if (data.cnrcUrl) formData.append("cnrc", data.cnrcUrl);
 
     const response = await fetch(`${API_BASE_URL}/auth/signup/startup`, {
         method: "POST",
@@ -183,7 +183,8 @@ export async function generateSlides() {
     });
 
     if (!response.ok) {
-        throw new Error("Failed to generate slides");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to generate slides");
     }
 
     return response.json();

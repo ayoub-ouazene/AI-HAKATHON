@@ -12,10 +12,10 @@ const generateToken = (id, role) => {
 exports.registerStartup = async (req, res) => {
   try {
     // 1. Extract text data from req.body
-    const { 
-      email, 
-      password, 
-      companyName, 
+    const {
+      email,
+      password,
+      companyName,
       founderName,
       description,
       sector,
@@ -37,6 +37,7 @@ exports.registerStartup = async (req, res) => {
     const logoUrl = req.files?.['logo']?.[0]?.path || null;
     const pitchDeckUrl = req.files?.['pitchDeck']?.[0]?.path || null;
     const videoPitchUrl = req.files?.['videoPitch']?.[0]?.path || null;
+    const cnrcUrl = req.files?.['cnrc']?.[0]?.path || null;
 
     // 4. Hash Password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -61,22 +62,23 @@ exports.registerStartup = async (req, res) => {
         monthlyUsers: parseInt(monthlyUsers) || 0,
         // URLs
         pitchDeckUrl,
-        videoPitchUrl
+        videoPitchUrl,
+        cnrcUrl
       }
     });
 
     // 6. Generate Token & Respond
     const token = generateToken(startup.id, 'STARTUP');
-    
+
     // Safety: Remove password before sending user back
     const { password: _, ...userWithoutPassword } = startup;
 
-    res.status(201).json({ 
-      token, 
-      user: { 
+    res.status(201).json({
+      token,
+      user: {
         ...userWithoutPassword,
-        role: 'STARTUP' 
-      } 
+        role: 'STARTUP'
+      }
     });
 
   } catch (err) {

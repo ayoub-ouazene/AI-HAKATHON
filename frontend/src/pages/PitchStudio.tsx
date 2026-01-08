@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ChevronRight, ChevronLeft, Layout, Loader2 } from "lucide-react";
 import { BentoCard } from "@/components/djisr/BentoCard";
@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { generateSlides } from "@/lib/api";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import mainLogo from "@/assets/DjisrUp-main-logo.png";
 
 interface Slide {
     title: string;
@@ -18,20 +19,34 @@ const PitchStudio = () => {
     const [slides, setSlides] = useState<Slide[]>([]);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
+    useEffect(() => {
+        const savedSlides = localStorage.getItem("pitch_deck_slides");
+        if (savedSlides) {
+            try {
+                setSlides(JSON.parse(savedSlides));
+            } catch (e) {
+                console.error("Failed to parse saved slides", e);
+            }
+        }
+    }, []);
+
     const handleGenerate = async () => {
         setIsGenerating(true);
         try {
             const response = await generateSlides();
             if (response.data?.slides?.slides) {
-                setSlides(response.data.slides.slides);
+                const newSlides = response.data.slides.slides;
+                setSlides(newSlides);
+                localStorage.setItem("pitch_deck_slides", JSON.stringify(newSlides));
                 setCurrentSlideIndex(0);
                 toast.success("Deck generated successfully!");
             } else {
                 throw new Error("Invalid response format");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            toast.error("Failed to generate slides. Please try again.");
+            const errorMessage = error.response?.data?.message || error.message || "Failed to generate slides. Please try again.";
+            toast.error(errorMessage);
         } finally {
             setIsGenerating(false);
         }
@@ -57,7 +72,7 @@ const PitchStudio = () => {
                 <header className="flex justify-between items-end">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+                            <Link to="/startup/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
                             <ChevronRight className="w-4 h-4" />
                             <span className="text-foreground font-medium">Pitch Studio</span>
                         </div>
@@ -158,7 +173,10 @@ const PitchStudio = () => {
 
                                                 {/* Slide Bottom Bar */}
                                                 <div className="absolute bottom-6 left-12 right-12 flex justify-between items-center opacity-30 group-hover:opacity-100 transition-opacity">
-                                                    <span className="text-sm font-medium tracking-widest uppercase">Djisr Pitch Studio</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <img src={mainLogo} alt="Djisr Logo" className="h-4 w-auto grayscale" />
+                                                        <span className="text-sm font-medium tracking-widest uppercase">Pitch Studio</span>
+                                                    </div>
                                                     <Layout className="w-4 h-4" />
                                                 </div>
                                             </BentoCard>

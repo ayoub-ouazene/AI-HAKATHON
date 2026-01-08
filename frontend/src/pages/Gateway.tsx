@@ -3,6 +3,7 @@ import { ArrowRight, Lock, Activity, CheckCircle2, LayoutTemplate, Building2, Tr
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { DjisrButton } from "@/components/djisr/DjisrButton";
+import mainLogo from "@/assets/DjisrUp-main-logo.png";
 
 const Gateway = () => {
     const fadeInUp = {
@@ -27,14 +28,13 @@ const Gateway = () => {
             <nav className="fixed top-0 w-full z-50 bg-[#FAFAFA]/80 backdrop-blur-md border-b border-neutral-100">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Building2 className="w-5 h-5" />
-                        <span className="font-semibold tracking-tight text-lg">Djisr</span>
+                        <img src={mainLogo} alt="Djisr Logo" className="h-8 w-auto" />
                     </div>
                     <div className="flex gap-6 text-sm text-neutral-500 font-medium">
-                        <a href="#features" className="hover:text-black transition-colors">Features</a>
-                        <a href="#investors" className="hover:text-black transition-colors">Investors</a>
-                        <a href="#founders" className="hover:text-black transition-colors">Founders</a>
-                        <Link to="/login" className="text-black hover:opacity-70 transition-opacity">Sign In</Link>
+                        <DjisrButton className="h-14 px-8 rounded-full text-lg bg-black text-white hover:bg-neutral-800 hover:scale-105 transition-all shadow-xl">
+                            <Link to="/login" className="text-white hover:opacity-70 transition-opacity">Sign In</Link>
+
+                        </DjisrButton>
                     </div>
                 </div>
             </nav>
@@ -312,8 +312,7 @@ const Gateway = () => {
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
                     <div className="col-span-1">
                         <div className="flex items-center gap-2 mb-4">
-                            <Building2 className="w-6 h-6 text-neutral-900" />
-                            <span className="font-bold text-xl tracking-tight">Djisr</span>
+                            <img src={mainLogo} alt="Djisr Logo" className="h-8 w-auto" />
                         </div>
                         <p className="text-neutral-500 text-sm">
                             Connecting visionaries with capital. The operating system for modern venture in Algeria.

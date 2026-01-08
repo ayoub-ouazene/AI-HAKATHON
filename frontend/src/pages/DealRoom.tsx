@@ -20,6 +20,22 @@ const DealRoom = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isDealModalOpen, setIsDealModalOpen] = useState(false);
 
+    // For Hackathon Demo: Use localStorage slides for all startups
+    const sharedSlides = (() => {
+        const saved = localStorage.getItem("pitch_deck_slides");
+        if (saved) {
+            try {
+                return JSON.parse(saved).map((s: any) => ({
+                    title: s.title,
+                    bolt: s.bullets[0] || "Innovation at scale." // Mapping bullets to 'bolt' expected by DealRoom UI
+                }));
+            } catch (e) {
+                return [];
+            }
+        }
+        return [];
+    })();
+
     // Normalize Data (Map Backend Deal/Startup to UI format)
     // If we have real data, map it. Otherwise fall back to mock for direct links (for now)
     const mockStartup = STARTUPS.find(s => s.id === id) || STARTUPS[0];
@@ -51,7 +67,7 @@ const DealRoom = () => {
         committed: 45, // Mock
         valuation: "10M DZD", // Mock or derived
         minTicket: "50k DZD",
-        slides: [], // No slides in backend example yet
+        slides: sharedSlides, // Using slides from localStorage
         logoUrl: dealData.startup.logoUrl // For fallback
     } : mockStartup;
 
@@ -326,6 +342,8 @@ const DealRoom = () => {
                                         className="space-y-6"
                                     >
                                         <div className="bg-slate-50 border border-slate-100 rounded-2xl p-12 min-h-[400px] flex flex-col items-center justify-center text-center relative overflow-hidden">
+                                            {/* Watermark for demo logic */}
+                                            <div className="absolute top-2 left-6 opacity-20 text-[10px] font-bold uppercase tracking-widest text-purple-600">AI Generated Preview</div>
 
                                             {/* Page Number */}
                                             <div className="absolute top-6 right-6 font-mono text-xs text-muted-foreground bg-white border border-border px-2 py-1 rounded-md">

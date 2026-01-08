@@ -43,6 +43,18 @@ const StartupDashboard = () => {
         month: new Date().toISOString().split('T')[0]
     });
     const [financialsOpen, setFinancialsOpen] = useState(false);
+    const [welcomeOpen, setWelcomeOpen] = useState(false);
+
+    useEffect(() => {
+        // Only show if user is a startup and hasn't seen welcome or generated slides
+        const hasSeenWelcome = localStorage.getItem("has_seen_pitch_welcome");
+        const hasSlides = localStorage.getItem("pitch_deck_slides");
+
+        if (!hasSeenWelcome && !hasSlides) {
+            setWelcomeOpen(true);
+            localStorage.setItem("has_seen_pitch_welcome", "true");
+        }
+    }, []);
 
     // Fetch Dashboard Data
     useEffect(() => {
@@ -474,19 +486,81 @@ const StartupDashboard = () => {
                 <motion.div variants={itemVariants} className="col-span-1">
                     <div className="h-full">
                         <BentoCard
-                            className="flex flex-col items-center justify-center text-center gap-4 group cursor-pointer h-full"
+                            className={cn(
+                                "flex flex-col items-center justify-center text-center gap-4 group cursor-pointer h-full relative overflow-hidden",
+                                !localStorage.getItem("pitch_deck_slides") && "border-purple-500/50 bg-purple-500/5"
+                            )}
                             hover
-                            onClick={() => navigate("/pitch-studio")}
+                            onClick={() => navigate("/startup/pitch")}
                         >
+                            {!localStorage.getItem("pitch_deck_slides") && (
+                                <div className="absolute top-3 right-3">
+                                    <span className="flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                                    </span>
+                                </div>
+                            )}
                             <div className="p-3 bg-muted rounded-full group-hover:-translate-y-1 transition-transform duration-300">
-                                <Sparkles className="w-6 h-6 stroke-1" />
+                                <Sparkles className={cn("w-6 h-6 stroke-1", !localStorage.getItem("pitch_deck_slides") && "text-purple-500")} />
                             </div>
-                            <span className="font-medium">Edit Pitch Deck</span>
+                            <div className="flex flex-col">
+                                <span className="font-medium">
+                                    {!localStorage.getItem("pitch_deck_slides") ? "Generate AI Pitch Deck" : "Edit Pitch Deck"}
+                                </span>
+                                {!localStorage.getItem("pitch_deck_slides") && (
+                                    <span className="text-[10px] text-purple-600 font-bold uppercase tracking-wider mt-1">Ready to build</span>
+                                )}
+                            </div>
                         </BentoCard>
                     </div>
                 </motion.div>
 
             </motion.div>
+
+            {/* Welcome Onboarding Dialog */}
+            <Dialog open={welcomeOpen} onOpenChange={setWelcomeOpen}>
+                <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-white border-0 shadow-2xl">
+                    <div className="relative h-48 bg-foreground flex items-center justify-center overflow-hidden">
+                        <div className="absolute inset-0 opacity-20">
+                            {[...Array(6)].map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    className="absolute h-px bg-white w-full"
+                                    style={{ top: `${i * 20}%` }}
+                                    animate={{ x: ["-100%", "100%"] }}
+                                    transition={{ duration: 3, repeat: Infinity, delay: i * 0.5, ease: "linear" }}
+                                />
+                            ))}
+                        </div>
+                        <Sparkles className="w-16 h-16 text-white relative z-10 animate-pulse" />
+                    </div>
+                    <div className="p-8 text-center">
+                        <h2 className="text-2xl font-bold tracking-tight mb-2">Welcome to your Mission Control.</h2>
+                        <p className="text-muted-foreground mb-8">
+                            We've analyzed your profile. Ready to generate your first AI-powered pitch deck?
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            <DjisrButton
+                                size="lg"
+                                className="w-full text-white bg-purple-600 hover:bg-purple-700"
+                                onClick={() => {
+                                    setWelcomeOpen(false);
+                                    navigate("/startup/pitch");
+                                }}
+                            >
+                                Generate My First Deck
+                            </DjisrButton>
+                            <button
+                                onClick={() => setWelcomeOpen(false)}
+                                className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+                            >
+                                I'll do it later
+                            </button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

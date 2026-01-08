@@ -3,12 +3,13 @@ const authController = require('../controllers/authController');
 const upload = require('../config/cloudinary');
 
 
-router.post('/signup/startup', 
+router.post('/signup/startup',
   upload.fields([
     { name: 'logo', maxCount: 1 },
     { name: 'pitchDeck', maxCount: 1 },
-    { name: 'videoPitch', maxCount: 1 }
-  ]), 
+    { name: 'videoPitch', maxCount: 1 },
+    { name: 'cnrc', maxCount: 1 }
+  ]),
   authController.registerStartup
 );
 

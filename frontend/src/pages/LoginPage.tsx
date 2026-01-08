@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import mainLogo from "@/assets/DjisrUp-main-logo.png";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -70,7 +71,8 @@ const LoginPage = () => {
             <div className="flex w-full flex-col justify-center px-8 lg:w-[40%] xl:px-24">
                 <div className="mx-auto w-full max-w-sm">
                     {/* Header */}
-                    <div className="mb-8">
+                    <div className="mb-8 ">
+                        <img src={mainLogo} alt="Djisr Logo" className="h-8 w-auto mb-10" />
                         <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
                             Welcome back.
                         </h1>

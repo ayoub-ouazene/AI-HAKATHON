@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/context/UserContext";
+import mainLogo from "@/assets/DjisrUp-main-logo.png";
 
 const DashboardLayout = () => {
     const location = useLocation();
@@ -33,7 +34,7 @@ const DashboardLayout = () => {
 
                 {/* Logo */}
                 <div className="h-16 flex items-center px-6 border-b border-transparent">
-                    <span className="text-xl font-bold tracking-tight">Djisr.</span>
+                    <img src={mainLogo} alt="Djisr Logo" className="h-7 w-auto" />
                 </div>
 
                 {/* Navigation */}

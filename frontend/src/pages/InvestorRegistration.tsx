@@ -10,6 +10,7 @@ import { BentoCard, BentoCardTitle, BentoCardLabel } from "@/components/djisr/Be
 import { DualRangeSlider } from "@/components/djisr/DualRangeSlider";
 import { cn } from "@/lib/utils";
 import { registerInvestor } from "@/lib/api";
+import mainLogo from "@/assets/DjisrUp-main-logo.png";
 
 const TOTAL_STEPS = 2;
 
@@ -121,8 +122,7 @@ const InvestorRegistration = () => {
                 <div className="flex-1 flex flex-col">
                     <header className="p-6 flex items-center justify-between border-b border-border">
                         <div className="flex items-center gap-2 lg:hidden">
-                            <Building2 className="w-5 h-5" />
-                            <span className="text-bento-title font-semibold">Djisr</span>
+                            <img src={mainLogo} alt="Djisr Logo" className="h-6 w-auto" />
                         </div>
                         <div className="text-micro uppercase text-muted-foreground">
                             Investor Registration

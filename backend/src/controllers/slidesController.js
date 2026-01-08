@@ -15,8 +15,9 @@ exports.generateSlidesFromPitch = async (req, res) => {
         });
 
         if (!startup || !startup.pitchDeckUrl) {
-            return res.status(404).json({ 
-                error: "Pitch deck not found. Please upload your pitch deck first." 
+            return res.status(404).json({
+                error: "Pitch deck not found",
+                message: "Please upload your pitch deck (PDF) in your profile or during registration to allow AI analysis."
             });
         }
 
@@ -38,7 +39,7 @@ exports.generateSlidesFromPitch = async (req, res) => {
         // Using native Blob + FormData for maximum compatibility with FastAPI
         const formData = new FormData();
         const fileBlob = new Blob([buffer], { type: 'application/pdf' });
-        
+
         // Key 'file' must match 'file: UploadFile' in main.py
         formData.append('file', fileBlob, 'pitch_deck.pdf');
 
@@ -53,9 +54,9 @@ exports.generateSlidesFromPitch = async (req, res) => {
         if (!aiResponse.ok) {
             const errorText = await aiResponse.text();
             console.error(`[Slides] AI Service Error: ${aiResponse.status} - ${errorText}`);
-            return res.status(aiResponse.status).json({ 
+            return res.status(aiResponse.status).json({
                 error: "AI Generation Service is currently unavailable.",
-                details: errorText 
+                details: errorText
             });
         }
 
@@ -70,9 +71,9 @@ exports.generateSlidesFromPitch = async (req, res) => {
 
     } catch (error) {
         console.error("[Slides] Critical Controller Error:", error);
-        return res.status(500).json({ 
+        return res.status(500).json({
             error: "An internal error occurred during slide generation.",
-            message: error.message 
+            message: error.message
         });
     }
 };

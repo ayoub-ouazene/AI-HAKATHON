@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import { TrustBox } from "@/components/djisr/TrustBox";
 import { AIRewriteBox } from "@/components/djisr/AIRewriteBox";
 import { BigNumberInput } from "@/components/djisr/BigNumberInput";
 import { BentoCard, BentoCardLabel, BentoCardTitle } from "@/components/djisr/BentoCard";
+import mainLogo from "@/assets/DjisrUp-main-logo.png";
 
 import { registerFounder } from "@/lib/api";
 
@@ -21,6 +22,8 @@ const sectors = ["SaaS", "Fintech", "Agritech", "E-commerce", "Healthtech", "Edt
 const FounderRegistration = () => {
   const navigate = useNavigate();
   const { login } = useUser();
+  const pitchDeckRef = useRef<HTMLInputElement>(null);
+  const cnrcRef = useRef<HTMLInputElement>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -143,8 +146,7 @@ const FounderRegistration = () => {
         <div className="flex-1 flex flex-col">
           <header className="p-6 flex items-center justify-between border-b border-border">
             <div className="flex items-center gap-2 lg:hidden">
-              <Building2 className="w-5 h-5" />
-              <span className="text-bento-title font-semibold">Djisr</span>
+              <img src={mainLogo} alt="Djisr Logo" className="h-6 w-auto" />
             </div>
             <div className="text-micro uppercase text-muted-foreground">
               Startup Registration
@@ -389,14 +391,44 @@ const FounderRegistration = () => {
                       </div>
 
                       <div className="space-y-4">
-                        <BentoCardLabel>Pitch Deck (PDF)</BentoCardLabel>
-                        <div className="border border-dashed border-border rounded-xl p-8 text-center hover:bg-slate-50 transition-colors cursor-pointer">
-                          <p className="text-sm text-muted-foreground">Click to upload Pitch Deck</p>
+                        <div>
+                          <BentoCardLabel>Pitch Deck (PDF)</BentoCardLabel>
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept=".pdf"
+                            ref={pitchDeckRef}
+                            onChange={(e) => setFormData({ ...formData, pitchDeckUrl: e.target.files?.[0] || null })}
+                          />
+                          <div
+                            onClick={() => pitchDeckRef.current?.click()}
+                            className={`border border-dashed border-border rounded-xl p-8 text-center hover:bg-slate-50 transition-colors cursor-pointer ${formData.pitchDeckUrl ? "bg-slate-50 border-foreground" : ""
+                              }`}
+                          >
+                            <p className="text-sm text-muted-foreground">
+                              {formData.pitchDeckUrl ? `Selected: ${formData.pitchDeckUrl.name}` : "Click to upload Pitch Deck"}
+                            </p>
+                          </div>
                         </div>
 
-                        <BentoCardLabel>CNRC / Registration (PDF)</BentoCardLabel>
-                        <div className="border border-dashed border-border rounded-xl p-8 text-center hover:bg-slate-50 transition-colors cursor-pointer">
-                          <p className="text-sm text-muted-foreground">Click to upload CNRC</p>
+                        <div>
+                          <BentoCardLabel>CNRC / Registration (PDF)</BentoCardLabel>
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept=".pdf"
+                            ref={cnrcRef}
+                            onChange={(e) => setFormData({ ...formData, cnrcUrl: e.target.files?.[0] || null })}
+                          />
+                          <div
+                            onClick={() => cnrcRef.current?.click()}
+                            className={`border border-dashed border-border rounded-xl p-8 text-center hover:bg-slate-50 transition-colors cursor-pointer ${formData.cnrcUrl ? "bg-slate-50 border-foreground" : ""
+                              }`}
+                          >
+                            <p className="text-sm text-muted-foreground">
+                              {formData.cnrcUrl ? `Selected: ${formData.cnrcUrl.name}` : "Click to upload CNRC"}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>

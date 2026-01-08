@@ -18,13 +18,14 @@ const storage = new CloudinaryStorage({
 
     return {
       folder: folderName,
+      resource_type: 'auto', // Support PDF, docx, etc.
       public_id: `${file.fieldname}-${Date.now()}`,
     };
   },
 });
 
 // ADD LIMITS HERE
-const upload = multer({ 
+const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 } // Limit to 5MB (Safe for Free Tier)
 });
