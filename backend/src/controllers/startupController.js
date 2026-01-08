@@ -3,7 +3,7 @@ const prisma = require("../config/prisma"); // <--- CHANGED
 
 exports.updateProfile = async (req, res) => {
   try {
-    const startupId = req.user.id;
+    const startupId = parseInt(req.user.id);
     const { description, phone, websiteUrl } = req.body;
 
     const logoUrl = req.files?.['logo']?.[0]?.path;
@@ -28,7 +28,7 @@ exports.updateProfile = async (req, res) => {
 
 exports.addFinancialRecord = async (req, res) => {
   try {
-    const startupId = req.user.id;
+    const startupId = parseInt(req.user.id);
     const { month, revenue, costs } = req.body;
     const proofUrl = req.files?.['proofDocument']?.[0]?.path;
 
@@ -51,10 +51,23 @@ exports.addFinancialRecord = async (req, res) => {
 exports.getDashboard = async (req, res) => {
   try {
     const startup = await prisma.startup.findUnique({
-      where: { id: req.user.id },
+      where: { id: parseInt(req.user.id) },
       include: {
         financials: { orderBy: { month: 'asc' } },
-        fundingRequests: { include: { waitingList: true } }
+        fundingRequests: {
+          include: {
+            waitingList: {
+              include: {
+                investor: {
+                  select: {
+                    id: true,
+                    fullName: true,
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     });
 
@@ -62,6 +75,26 @@ exports.getDashboard = async (req, res) => {
 
     res.json(startup);
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.respondToOffer = async (req, res) => {
+  try {
+    const { offerId, status } = req.body; // status: 'ACCEPTED' | 'REJECTED'
+
+    if (!['ACCEPTED', 'REJECTED'].includes(status)) {
+      return res.status(400).json({ error: "Invalid status. Use ACCEPTED or REJECTED." });
+    }
+
+    const offer = await prisma.investmentOffer.update({
+      where: { id: parseInt(offerId) },
+      data: { status: status }
+    });
+
+    res.json({ message: `Offer ${status.toLowerCase()} successfully`, offer });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };

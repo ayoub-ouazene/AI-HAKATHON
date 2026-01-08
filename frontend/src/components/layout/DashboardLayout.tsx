@@ -9,7 +9,7 @@ import { useUser } from "@/context/UserContext";
 const DashboardLayout = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout } = useUser();
+    const { logout, userName } = useUser();
     const isStartupContext = location.pathname.startsWith("/startup");
 
     const STARTUP_LINKS = [
@@ -68,11 +68,11 @@ const DashboardLayout = () => {
                 <div className="p-4 border-t border-[#E5E5E5]">
                     <div className="flex items-center gap-3 px-2 mb-4">
                         <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">
-                            {isStartupContext ? "AF" : "AI"}
+                            {userName ? userName.substring(0, 2).toUpperCase() : (isStartupContext ? "AF" : "AI")}
                         </div>
                         <div className="overflow-hidden">
                             <p className="text-sm font-medium truncate">
-                                {isStartupContext ? "AgriFlow Inc." : "Amine I."}
+                                {userName || (isStartupContext ? "AgriFlow Inc." : "Amine I.")}
                             </p>
                             <p className="text-xs text-muted-foreground truncate">
                                 {isStartupContext ? "Foundation Plan" : "Accredited"}

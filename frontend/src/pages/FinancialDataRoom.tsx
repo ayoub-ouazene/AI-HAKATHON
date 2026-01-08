@@ -11,8 +11,8 @@ const FinancialDataRoom = () => {
                     <h1 className="text-3xl font-bold tracking-tight">Financial Vault</h1>
                     <p className="text-muted-foreground mt-1">Securely share sensitive financial data with authorized investors.</p>
                 </div>
-                <DjisrButton>
-                    <UploadCloud className="w-4 h-4 mr-2" />
+                <DjisrButton className="text-white">
+                    <UploadCloud className="w-4 h-4 mr-2 text-white" />
                     Upload Document
                 </DjisrButton>
             </div>

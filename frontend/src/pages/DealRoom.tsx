@@ -63,7 +63,6 @@ const DealRoom = () => {
                 onClose={() => setIsDealModalOpen(false)}
                 startupName={startup.name}
                 dealId={Number(startup.id) || 0}
-                offerType={startup.offerType}
             />
 
             {/* Header / Breadcrumbs */}

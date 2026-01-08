@@ -43,7 +43,7 @@ const LoginPage = () => {
             // Update context
             // Note: UserContext currently handles type, but not full user object. 
             // We pass the type we got back.
-            login(response.user.type, response.token);
+            login(response.user.type, response.token, response.user.name);
 
             toast.success(`Welcome back, ${response.user.name}`);
 
