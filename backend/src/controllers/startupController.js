@@ -48,6 +48,7 @@ exports.addFinancialRecord = async (req, res) => {
   }
 };
 
+
 exports.getDashboard = async (req, res) => {
   try {
     const startup = await prisma.startup.findUnique({
@@ -58,9 +59,27 @@ exports.getDashboard = async (req, res) => {
       }
     });
 
+    if (!startup) {
+      return res.status(404).json({ error: "Startup not found" });
+    }
 
+    // 1. Filter the existing array to find "Active" offers
+    // IMPORTANT: Replace 'OPEN' with the exact status string/enum from your Prisma schema (e.g., 'ACTIVE', 'PUBLISHED')
+    const activeOffers = startup.fundingRequests.filter(
+      (request) => request.status === 'OPEN'
+    );
 
-    res.json(startup);
+    // 2. Count them
+    const activeOffersCount = activeOffers.length;
+
+    // 3. Return the original startup object PLUS the new variables
+    // We spread (...startup) to keep all original data (id, financials, etc.)
+    res.json({
+      ...startup,
+      activeOffers,
+      activeOffersCount
+    });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
